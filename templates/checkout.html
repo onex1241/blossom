@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Оформление заказа — Blossom</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    body {
+      padding-top: 40px;
+      background: linear-gradient(180deg, #fff4f7 0%, #ffe9f1 100%);
+      font-family: "Poppins", sans-serif;
+    }
+
+    .checkout-container {
+      max-width: 760px;
+      margin: 40px auto;
+      background: white;
+      padding: 38px;
+      border-radius: 22px;
+      box-shadow: 0 12px 40px rgba(255,105,145,0.25);
+      animation: fadeIn .45s ease;
+      border: 2px solid #ffe0eb;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      margin-top: 0;
+      text-align: center;
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 28px;
+      color: #ff3c7a;
+      text-shadow: 0 2px 4px rgba(255,105,145,0.2);
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #444;
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 2px solid #ffd2e3;
+      font-size: 16px;
+      outline: none;
+      background: #fffafd;
+      transition: border .2s ease, box-shadow .2s ease;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #ff6b9a;
+      box-shadow: 0 0 0 4px rgba(255,105,145,0.18);
+      background: white;
+    }
+
+    textarea {
+      height: 120px;
+      resize: none;
+    }
+
+    /* Блок заказа */
+    .order-summary {
+      background: #fff7fb;
+      padding: 22px;
+      margin: 28px 0;
+      border-radius: 18px;
+      border: 2px solid #ffd9e8;
+      box-shadow: inset 0 6px 16px rgba(255, 210, 230, 0.35);
+    }
+
+    .order-summary h3 {
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ff3c7a;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .order-item:last-child { margin-bottom: 0; }
+
+    .total-line {
+      font-weight: 700;
+      font-size: 20px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #f5bfd3;
+      display: flex;
+      justify-content: space-between;
+      color: #ff2368;
+    }
+
+    .btn-checkout {
+      width: 100%;
+      background: linear-gradient(90deg, #ff6ba0, #ff3c7a);
+      color: white;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: 700;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      transition: transform .22s ease, box-shadow .22s ease;
+      box-shadow: 0 8px 25px rgba(255,80,135,0.35);
+    }
+
+    .btn-checkout:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(255,80,135,0.45);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 18px;
+      text-align: center;
+      width: 100%;
+      font-size: 15px;
+      text-decoration: none;
+      color: #777;
+      transition: color .2s ease;
+    }
+    .back-link:hover { color: #ff3c7a; }
+
+    /* Мобильная адаптация */
+    @media (max-width: 480px) {
+        .checkout-container {
+            padding: 26px;
+        }
+        h2 {
+            font-size: 26px;
+        }
+        .btn-checkout {
+            font-size: 18px;
+            padding: 14px;
+        }
+    }
+</style>
+
+
+  
+</head>
+
+<body>
+
+  <div class="checkout-container">
+    <h2>Оформление заказа</h2>
+
+    <div class="order-summary">
+      <h3 style="margin-top:0; color:#ff3c7a;">Ваш заказ</h3>
+
+      <!-- Динамический вывод -->
+      <div id="checkout-items"></div>
+
+      <div class="total-line">
+        <span>Итого:</span>
+        <span id="checkout-total">0 ₽</span>
+      </div>
+    </div>
+
+    <!-- ФОРМА -->
+    <form method="POST" action="{{ url_for('submit_order') }}">
+
+      <input type="hidden" name="order_json" id="order_json">
+
+      <div class="form-group">
+        <label>Ваше имя</label>
+        <input type="text" name="name" required>
+      </div>
+
+      <div class="form-group">
+        <label>Телефон</label>
+        <input type="text" name="phone" required placeholder="+7 (___) ___-__-__">
+      </div>
+
+      <div class="form-group">
+        <label>Адрес доставки</label>
+        <textarea name="address" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Комментарий</label>
+        <textarea name="comment"></textarea>
+      </div>
+
+      <button class="btn-checkout" type="submit">Подтвердить заказ</button>
+      <a href="{{ url_for('index') }}" class="back-link">← Вернуться к покупкам</a>
+
+    </form>
+  </div>
+
+  <!-- JS: Загружаем корзину из localStorage -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      let total = Number(localStorage.getItem("checkout_total") || 0);
+
+      let container = document.getElementById("checkout-items");
+      container.innerHTML = "";
+
+      cart.forEach(item => {
+        let div = document.createElement("div");
+        div.className = "order-item";
+        div.innerHTML = `
+          <span>${item.name} × ${item.qty}</span>
+          <strong>${item.price * item.qty} ₽</strong>
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById("checkout-total").innerText = total + " ₽";
+
+      // отправляем корзину на сервер
+      document.getElementById("order_json").value = JSON.stringify({
+        cart: cart,
+        total: total
+      });
+
+    });
+  </script>
+
+</body>
+</html>

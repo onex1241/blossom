@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Заказ оформлен — Blossom</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      background: #fff4f7;
+      text-align: center;
+      padding-top: 120px;
+      font-family: "Poppins", sans-serif;
+    }
+    .box {
+      background: white;
+      padding: 40px;
+      max-width: 480px;
+      margin: auto;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    h1 { color: #ff3c7a; }
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      color: #ff6b9a;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    a:hover { color: #ff3c7a; }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h1>Спасибо, {{ name }}!</h1>
+    <p>Ваш заказ успешно оформлен 💐</p>
+    <a href="{{ url_for('index') }}">Вернуться на главную</a>
+  </div>
+
+</body>
+</html>

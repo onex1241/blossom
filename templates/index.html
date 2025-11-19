@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blossom — Цветочный магазин</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- HEADER (исправленный) -->
+<header class="header-new">
+    <div class="header-container">
+
+        <!-- ЛОГО -->
+        <div class="header-logo">Blossom</div>
+
+        <!-- КНОПКИ -->
+        <div class="header-actions">
+
+            <button id="fav-top-btn" class="header-btn fav-top-btn">
+                ❤
+                <span id="fav-count">0</span>
+            </button>
+
+            <button id="cart-top-btn" class="header-btn cart-btn">
+                🛒
+                <span id="cart-count">0</span>
+            </button>
+
+        </div>
+    </div>
+</header>
+
+
+<!-- FAVORITES PANEL -->
+<div id="fav-panel" class="side-panel">
+    <div class="panel-header">Избранное</div>
+    <ul id="fav-panel-list" class="panel-list"></ul>
+</div>
+
+<!-- CART PANEL -->
+<div id="cart-panel" class="side-panel">
+    <div class="panel-header">Корзина</div>
+    <ul id="cart-panel-list" class="panel-list"></ul>
+    <div class="panel-total">
+        Итого: <strong id="panel-total">0</strong> ₽
+    </div>
+    <a href="{{ url_for('checkout') }}" class="btn checkout-btn">Оформить заказ</a>
+</div>
+
+
+<!-- MAIN -->
+<div class="container">
+    <h2 class="title">Популярные букеты</h2>
+
+    <div class="filter-bar">
+        <button class="btn small" onclick="resetFilters()">Все</button>
+        <button class="btn small" onclick="filterByCategory('roses')">Розы</button>
+        <button class="btn small" onclick="filterByCategory('tulips')">Тюльпаны</button>
+        <button class="btn small" onclick="filterByCategory('peonies')">Пионы</button>
+        <button class="btn small" onclick="sortByPrice('asc')">Цена ↑</button>
+        <button class="btn small" onclick="sortByPrice('desc')">Цена ↓</button>
+    </div>
+
+    <!-- SKELETON -->
+    <div id="skeleton-wrapper" class="product-grid">
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+        <div class="skeleton-card"></div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div id="products" class="product-grid" style="display:none;"></div>
+
+</div>
+
+<footer>© 2025 Blossom. Все права защищены.</footer>
+
+<div id="toast"></div>
+
+<!-- Передаём товары -->
+<script>
+    window.initialProducts = {{ products|tojson }};
+</script>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

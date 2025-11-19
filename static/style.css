@@ -1,0 +1,509 @@
+/* =========================
+   FIXED style.css (safe + clickable)
+   ========================= */
+
+:root{
+  --accent: #ff6b9a;
+  --accent-dark: #e92966;
+  --bg: #fff4f7;
+  --text: #222;
+  --muted: #777;
+  --topbar-height: 86px; /* держим высоту хедера в одном месте */
+}
+
+/* reset / base */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  /* Padding-top = точная высота фиксированного хедера, чтобы содержимое не перекрывалось */
+  padding-top: var(--topbar-height);
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ---------- MOBILE FIX ---------- */
+@media (max-width: 480px) {
+    .top-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px 16px;
+    }
+    .top-bar header {
+        font-size: 18px;
+        text-align: center;
+    }
+    .top-bar .actions {
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+    }
+}
+
+/* ---------- TOP BUTTONS (fav + cart) ---------- */
+.fav-top-btn,
+.cart-btn {
+  position: absolute;
+  top: 18px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform .18s ease, background .18s ease, color .18s ease;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.16);
+  z-index: 3050; /* выше контента, но ниже toast */
+}
+
+/* left / right positions */
+.fav-top-btn { right: 92px; background: white; color: var(--accent-dark); border-color: white; }
+.cart-btn    { right: 20px;  background: var(--accent); color: white; border-color: rgba(255,255,255,0.12); }
+
+.fav-top-btn:hover,
+.cart-btn:hover {
+  transform: translateY(-3px);
+}
+
+/* small counters (badges) */
+#fav-count, #cart-count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: var(--accent-dark);
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1;
+  pointer-events: none; /* бейджи не должны перехватывать клики */
+}
+
+/* ---------- SIDE PANELS (fav & cart) ---------- */
+.side-panel {
+  position: fixed;
+  top: calc(var(--topbar-height) + 10px);
+  right: 20px;
+  width: 320px;
+  max-width: calc(100% - 40px);
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+  opacity: 0;
+  transform: translateY(-10px) scale(.995);
+  pointer-events: none; /* не принимать клики когда закрыт */
+  transition: opacity .22s ease, transform .22s ease;
+  z-index: 3050;
+}
+
+.side-panel.open {
+  opacity: 1;
+  transform: translateY(6px) scale(1);
+  pointer-events: auto;
+}
+
+.side-panel .panel-header {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 16px;
+}
+
+/* list */
+.side-panel .panel-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* panel item */
+.side-panel .panel-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 6px;
+  border-bottom: 1px solid #f3f3f3;
+  font-size: 14px;
+  color: var(--text);
+  z-index: 1;
+  position: relative;
+}
+
+.side-panel .panel-item:last-child { border-bottom: none; }
+
+/* small helper for right side block */
+.item-right { display:flex; align-items:center; gap:8px; }
+
+/* empty panels */
+.side-panel .panel-empty {
+  padding: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* remove small button (cross) */
+.remove-small {
+  background: none;
+  border: none;
+  color: var(--accent-dark);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: transform .12s ease, color .12s ease;
+}
+.remove-small:hover {
+  color: #ff0f6f;
+  transform: scale(1.12);
+}
+
+/* panel footer (cart) */
+.panel-total {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f3f3f3;
+  font-weight: 700;
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* checkout button inside panel */
+.side-panel .checkout-btn {
+  margin-top: 12px;
+  display:block;
+  text-align:center;
+}
+
+/* ---------- LAYOUT / CONTAINER ---------- */
+.container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 18px;
+  position: relative;
+  z-index: 1; /* контент над фоном, под top-bar */
+}
+
+/* ---------- FILTER BAR ---------- */
+.filter-bar {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+/* ---------- GLOBAL BUTTONS ---------- */
+.btn {
+  display:inline-block;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .16s ease, background .16s ease;
+  box-shadow: 0 6px 18px rgba(255,105,145,0.12);
+}
+.btn:hover { transform: translateY(-3px); background: var(--accent-dark); }
+.btn.small { padding: 8px 10px; font-size: 14px; }
+
+/* ---------- SKELETON ---------- */
+/* skeleton оставляем визуально, но он НЕ ПЕРЕХВАТЫВАЕТ клики */
+#skeleton-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  pointer-events: none; /* важно: не блокирует клики под ним */
+  position: relative;
+  z-index: 0;
+}
+.skeleton-card {
+  height: 360px;
+  border-radius: 14px;
+  background: linear-gradient(90deg,#efeaea,#f8f0f4,#efeaea);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+@keyframes shimmer { 0% { background-position:200% 0 } 100% { background-position:-200% 0 } }
+
+/* ---------- PRODUCT GRID ---------- */
+.product-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- CARD ---------- */
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+  transition: transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s ease;
+  position: relative;
+  overflow: hidden;
+  will-change: transform;
+  z-index: 2; /* над product-grid */
+  /* гарантируем, что элементы карточки принимают клики */
+  pointer-events: auto;
+}
+
+/* hover визуал */
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 18px 45px rgba(0,0,0,0.16);
+}
+
+/* subtle shine element (kept but unobtrusive) */
+.card-shine {
+  position: absolute;
+  top: -20%;
+  left: -30%;
+  width: 160%;
+  height: 160%;
+  pointer-events: none; /* не мешает кликам */
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.08), rgba(255,255,255,0) 20%);
+  transform: translateX(-10%);
+  transition: transform .6s ease;
+}
+
+/* image */
+.card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  display:block;
+  margin-bottom: 10px;
+  transition: transform .22s ease-out;
+  pointer-events: none; /* картинка не должна перехватывать клики, кнопки внутри карточки — да */
+}
+
+/* title / price */
+.card h3 { margin: 6px 0 6px; font-size: 18px; }
+.price { margin: 0 0 10px; font-weight:700; color:var(--text); }
+
+/* ---------- CARD ACTIONS ---------- */
+.card-actions {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  /* убедимся, что блок действий принимает клики и не перекрыт */
+  pointer-events: auto;
+  position: relative;
+  z-index: 3;
+}
+
+/* Add button (main CTA) */
+.add-btn {
+  flex: 1;
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(255,105,145,0.12);
+  transition: transform .14s ease, background .14s ease;
+  pointer-events: auto;
+}
+.add-btn:hover { background: var(--accent-dark); transform: translateY(-3px); }
+
+/* favorite button (heart) */
+.fav-btn {
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:2px solid var(--accent);
+  background:white;
+  color:var(--accent);
+  font-size:18px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  transition: transform .14s ease, background .14s ease, border-color .14s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  pointer-events: auto;
+}
+.fav-btn:hover { transform: translateY(-2px); border-color:var(--accent-dark); color:var(--accent-dark); }
+.fav-btn.active { background: var(--accent); color: white; border-color: var(--accent-dark); transform: scale(1.06); }
+
+/* ---------- REMOVE BUTTON STYLES ---------- */
+.remove-btn, .remove-small {
+  background: none;
+  border: none;
+  color: var(--accent-dark);
+  font-size: 18px;
+  cursor: pointer;
+  transition: color .12s ease, transform .12s ease;
+  pointer-events: auto;
+}
+.remove-btn:hover, .remove-small:hover {
+  color: #ff1f6f;
+  transform: scale(1.12);
+}
+
+/* ---------- TOAST ---------- */
+#toast {
+  position: fixed;
+  bottom: 30px;
+  right: -360px;
+  background: var(--accent);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+  transition: right .45s cubic-bezier(.2,.8,.2,1);
+  z-index: 4000;
+}
+#toast.show { right: 30px; }
+
+/* ---------- PANEL: mobile adjustments ---------- */
+@media (max-width: 900px) {
+  .side-panel { right: 12px; width: 92%; left: auto; max-width: none; }
+  .fav-top-btn { right: 120px; } /* keep spacing */
+}
+
+/* hide fixed cart button on tiny screens, show mobile bar if implemented */
+@media (max-width: 600px) {
+  .cart-btn { display: none; }
+}
+
+/* ---------- SMALL UTILITIES ---------- */
+.panel-list::-webkit-scrollbar,
+.side-panel .panel-list::-webkit-scrollbar {
+  width: 8px;
+}
+.panel-list::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.08);
+  border-radius: 6px;
+}
+
+/* helper empty style */
+.empty, .panel-empty {
+  padding: 12px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* safety helpers: ensure no hidden overlay blocks cards */
+.card, .card * { pointer-events: auto; }
+#skeleton-wrapper, #skeleton-wrapper * { pointer-events: none; }
+
+
+/* ===== УЛУЧШЕННАЯ ШАПКА ===== */
+.header-new {
+    width: 100%;
+    background: rgb(248, 92, 118);
+    padding: 8px 20px;               /* ниже было 10px — немного уменьшил */
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;              /* ← КНОПКИ СТАНУТ ПО ЦЕНТРУ */
+    
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 3000;
+
+    border-bottom: 1px solid #eee;
+    height: 68px;                     /* ← ЗАДАЁМ ЧЁТКУЮ ВЫСОТУ ХЕДЕРА */
+}
+
+/* ЛОГО */
+.header-logo {
+    font-size: 44px;
+    font-weight: 1000;
+    color: #070103;
+}
+
+/* БЛОК КНОПОК */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: -20px;                          /* ← БЫЛО 14px → теперь ближе */
+}
+
+/* КНОПКИ */
+.header-btn {
+    width: 42px;                       /* было 44px → чуть меньше */
+    height: 42px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #ffe2ef;
+    border-radius: 12px;
+    border: 2px solid white;
+
+    font-size: 20px;                   /* было 22px → уменьшил */
+    cursor: pointer;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: 0.18s;
+}
+
+.header-btn:hover {
+    transform: translateY(-3px);
+    background: #ffd2e9;
+}
+
+/* БЕЙДЖИ (фиксируем позицию) */
+#fav-count,
+#cart-count {
+    position: absolute;
+
+    margin-left: 18px;                /* подстраиваю под уменьшенную кнопку */
+    margin-top: -30px;
+
+    background: #ff3c7a;
+    color: white;
+
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 11px;
+}
+
+/* Чтобы контент не заезжал под шапку */
+.container {
+    margin-top: 110px !important;      /* было 120 → чуть ниже */
+}
+
+
+/* ---------------------
+   АДАПТИВ ДЛЯ МОБИЛЬНЫХ
+   --------------------- */
+
+@media (max-width: 500px) {
+    .header-logo {
+        font-size: 20px;
+    }
+
+    .header-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+}
